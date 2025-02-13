@@ -14,4 +14,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 5000
 
 # Устанавливаем команду для запуска приложения
-CMD ["python", "stub_server/stub_server.py"]
+CMD ["python", "stub_server.py"]
