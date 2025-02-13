@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import logging
+import sys
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -62,6 +63,14 @@ ROOT_URLCONF = 'amo_test_monitoring_app.urls'
 
 import os
 
+# settings.py
+
+def is_test_environment():
+    return 'test' in sys.argv or any('test' in arg for arg in sys.argv)
+
+# Example usage
+
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 TEMPLATES = [
@@ -96,7 +105,11 @@ DATABASES = {
         'PORT': '3306',
     }
 }
-
+if is_test_environment():
+    logging.warning("Running in test environment")
+    DATABASES['default']['HOST'] = '127.0.0.1'
+else:
+    logging.warning("Running in production environment")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

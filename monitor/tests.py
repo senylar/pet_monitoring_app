@@ -1,4 +1,5 @@
 import os
+
 import django
 from django.core.management import call_command
 from django.test import TestCase, override_settings
@@ -8,20 +9,30 @@ from monitor.models import Metric, Incident, Server
 from monitor.utils import check_metric, process_metrics
 
 # Указываем путь к настройкам Django
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "amo_test_monitoring_app.settings")
-django.setup()
+
+
+from django.test import TransactionTestCase
 
 
 @override_settings(DATABASES={
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': ':memory:',
+        'TEST': {
+            'NAME': ':memory:',  # Явно указываем in-memory базу данных для тестов
+        }
     }
 })
-class TestMonitor(TestCase):
+
+
+class TestMonitor(TransactionTestCase):
     def setUp(self):
+        # Указываем путь к настройкам Django
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "amo_test_monitoring_app.settings")
+        django.setup()
+
+
         # Настройка тестовых данных
-        call_command('migrate')
 
         # Создаем тестовый сервер
         self.server = Server.objects.create(

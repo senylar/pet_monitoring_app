@@ -10,9 +10,9 @@ class Server(models.Model):
 
 class Metric(models.Model):
     server = models.ForeignKey(Server, on_delete=models.CASCADE)
-    cpu = models.PositiveSmallIntegerField()  # 0-100%
-    mem = models.PositiveSmallIntegerField(max_length=10)     # "30%"
-    disk = models.PositiveSmallIntegerField(max_length=10)    # "43%"
+    cpu = models.PositiveSmallIntegerField()
+    mem = models.PositiveSmallIntegerField()
+    disk = models.PositiveSmallIntegerField()
     uptime = models.CharField(max_length=20)
     timestamp = models.DateTimeField(auto_now_add=True)
 
