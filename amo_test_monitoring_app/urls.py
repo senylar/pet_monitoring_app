@@ -19,6 +19,9 @@ from django.urls import path
 from django.contrib import admin
 from django.urls import path
 
+from monitor.views import upload_csv
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('upload_csv/', upload_csv, name='upload_csv'),
 ]

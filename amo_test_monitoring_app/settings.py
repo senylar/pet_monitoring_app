@@ -25,8 +25,16 @@ SECRET_KEY = 'django-insecure-%buast8$$3rq2@*$55z0+01%s6t)onz5x9abxn)#ecg2l$(--y
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# settings.py
+ALLOWED_HOSTS = ['*']
 
+from datetime import timedelta
+
+METRICS = {
+    'cpu': (85, timedelta(minutes=30)),
+    'mem': (90, timedelta(minutes=30)),
+    'disk': (95, timedelta(hours=2))
+}
 
 # Application definition
 
@@ -81,7 +89,7 @@ DATABASES = {
         'NAME': 'server_monitor',
         'USER': 'root',#"'django_user',
         'PASSWORD': 'rootpassword',#'djangopassword',
-        'HOST': '127.0.0.1',  # имя сервиса из docker-compose.yml
+        'HOST': '127.0.0.1',#'db',  # имя сервиса из docker-compose.yml
         'PORT': '3306',
     }
 }
