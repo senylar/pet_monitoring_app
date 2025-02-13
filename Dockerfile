@@ -1,13 +1,20 @@
 FROM python:3.12
+LABEL authors="gggg"
 
-LABEL authors="ggggg"
-
+# Set the working directory
 WORKDIR /app
 
-COPY requirements.txt .
+# Copy project files into the container
+COPY . /app
 
-RUN pip install --no-cache-dir --trusted-host pypi.python.org --trusted-host pypi.org --trusted-host files.pythonhosted.org -r requirements.txt
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Verify Flask installation
+RUN python -m pip show flask
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Expose the port for the Flask application
+EXPOSE 5000
+
+# Set the command to run the application
+CMD ["python", "stub_server/stub_server.py"]
