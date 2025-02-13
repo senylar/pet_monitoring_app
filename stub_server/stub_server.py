@@ -14,4 +14,4 @@ def metrics(server_id):
          "uptime": f"{random.randint(1, 30)}d {random.randint(0, 23)}h {random.randint(0, 59)}m",'cpu':95,'mem':'93%','disk':'85%'})
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run(host='0.0.0.0', port=5000)
