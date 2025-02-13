@@ -1,15 +1,23 @@
+import os
+
 from django.contrib import admin
 from .models import Server, Metric, Incident
 from django.db.models import Q
+from django.conf import settings
 
-# @admin.register(Server)
-# class ServerAdmin(admin.ModelAdmin):
-#     list_display = ('name', 'endpoint')
+from .utils import fetch_metrics
+from django.urls import path
+from django.shortcuts import render, redirect
+from django.contrib import admin, messages
+from django import forms
+import csv
+from io import TextIOWrapper
 
 @admin.register(Metric)
 class MetricAdmin(admin.ModelAdmin):
     list_display = ('server', 'cpu_with_percentage', 'mem_with_percentage', 'disk_with_percentage', 'uptime', 'timestamp')
     list_filter = ('server',)
+    change_list_template = os.path.join(settings.BASE_DIR, 'monitor/templates/metrics/change_list.html')
 
     def cpu_with_percentage(self, obj):
         return f"{obj.cpu}%"
@@ -22,6 +30,19 @@ class MetricAdmin(admin.ModelAdmin):
     def disk_with_percentage(self, obj):
         return f"{obj.disk}%"
     disk_with_percentage.short_description = 'Disk'
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path('fetch-metrics/', self.admin_site.admin_view(self.fetch_metrics_view), name='fetch_metrics'),
+        ]
+        return custom_urls + urls
+
+    def fetch_metrics_view(self, request):
+        from .utils import fetch_metrics  # Импортируем функцию здесь, чтобы избежать циклического импорта
+        fetch_metrics()
+        self.message_user(request, "Metrics fetched successfully")
+        return redirect('..')  # Возвращаемся на страницу списка
 
 @admin.register(Incident)
 class IncidentAdmin(admin.ModelAdmin):
@@ -36,13 +57,10 @@ class IncidentAdmin(admin.ModelAdmin):
             Q(metric_type='mem', count__gte=2) |
             Q(metric_type='disk', count__gte=8))
 
-from django.urls import path
-from django.shortcuts import render, redirect
-from django.contrib import admin, messages
-from django import forms
-from .models import Server
-import csv
-from io import TextIOWrapper
+@admin.action(description='Fetch Metrics')
+def fetch_metrics_action(modeladmin, request, queryset):
+    fetch_metrics()
+    modeladmin.message_user(request, "Metrics fetched successfully")
 
 class CSVImportForm(forms.Form):
     csv_file = forms.FileField(label='CSV файл')
@@ -50,7 +68,7 @@ class CSVImportForm(forms.Form):
 @admin.register(Server)
 class ServerAdmin(admin.ModelAdmin):
     list_display = ('name', 'endpoint', 'created_at')
-    change_list_template = 'change_list.html'  # Кастомный шаблон
+    change_list_template = os.path.join(settings.BASE_DIR, 'monitor/templates/servers/change_list.html')
 
     def get_urls(self):
         urls = super().get_urls()
@@ -82,4 +100,4 @@ class ServerAdmin(admin.ModelAdmin):
             'opts': self.model._meta,
             'has_change_permission': self.has_change_permission(request),
         }
-        return render(request, 'upload_csv.html', context)
+        return render(request, 'servers/upload_csv.html', context)

@@ -31,9 +31,9 @@ ALLOWED_HOSTS = ['*']
 from datetime import timedelta
 
 METRICS = {
-    'cpu': (85, timedelta(minutes=30)),
-    'mem': (90, timedelta(minutes=30)),
-    'disk': (95, timedelta(hours=2))
+    'cpu': 85,
+    'mem': 90,
+    'disk': 95,
 }
 
 # Application definition
@@ -60,11 +60,14 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'amo_test_monitoring_app.urls'
 
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -89,7 +92,7 @@ DATABASES = {
         'NAME': 'server_monitor',
         'USER': 'root',#"'django_user',
         'PASSWORD': 'rootpassword',#'djangopassword',
-        'HOST': '127.0.0.1',#'db',  # имя сервиса из docker-compose.yml
+        'HOST': 'db',  # имя сервиса из docker-compose.yml '127.0.0.1',
         'PORT': '3306',
     }
 }

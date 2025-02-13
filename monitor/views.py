@@ -16,4 +16,4 @@ def upload_csv(request):
             return redirect('success_url')  # Замените 'success_url' на ваш URL
     else:
         form = UploadCSVForm()
-    return render(request, 'upload_csv.html', {'form': form})
+    return render(request, 'servers/upload_csv.html', {'form': form})
