@@ -25,8 +25,16 @@ SECRET_KEY = 'django-insecure-%buast8$$3rq2@*$55z0+01%s6t)onz5x9abxn)#ecg2l$(--y
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# settings.py
+ALLOWED_HOSTS = ['*']
 
+from datetime import timedelta
+
+METRICS = {
+    'cpu': 85,
+    'mem': 90,
+    'disk': 95,
+}
 
 # Application definition
 
@@ -52,11 +60,14 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'amo_test_monitoring_app.urls'
 
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -81,7 +92,7 @@ DATABASES = {
         'NAME': 'server_monitor',
         'USER': 'root',#"'django_user',
         'PASSWORD': 'rootpassword',#'djangopassword',
-        'HOST': '127.0.0.1',  # имя сервиса из docker-compose.yml
+        'HOST': 'db',  # имя сервиса из docker-compose.yml '127.0.0.1',
         'PORT': '3306',
     }
 }

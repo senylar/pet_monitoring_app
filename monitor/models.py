@@ -11,8 +11,8 @@ class Server(models.Model):
 class Metric(models.Model):
     server = models.ForeignKey(Server, on_delete=models.CASCADE)
     cpu = models.PositiveSmallIntegerField()  # 0-100%
-    mem = models.CharField(max_length=10)     # "30%"
-    disk = models.CharField(max_length=10)    # "43%"
+    mem = models.PositiveSmallIntegerField(max_length=10)     # "30%"
+    disk = models.PositiveSmallIntegerField(max_length=10)    # "43%"
     uptime = models.CharField(max_length=20)
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -25,6 +25,7 @@ class Incident(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField(null=True, blank=True)
     resolved = models.BooleanField(default=False)
+    count = models.PositiveSmallIntegerField(default=1)
 
     def __str__(self):
         return f"{self.server.name} - {self.metric_type} ({'Resolved' if self.resolved else 'Active'})"
