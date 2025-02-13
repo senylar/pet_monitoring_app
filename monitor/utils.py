@@ -8,7 +8,22 @@ import traceback
 import re
 from monitor.models import Metric
 
+
+
 def check_metric(server, metric_type, current_value, threshold, Incident):
+    """
+    Checks if the current value of a metric exceeds the threshold and creates or updates an incident accordingly.
+
+    Args:
+        server (Server): The server object.
+        metric_type (str): The type of the metric (e.g., 'cpu', 'mem').
+        current_value (int): The current value of the metric.
+        threshold (int): The threshold value for the metric.
+        Incident (Model): The Incident model.
+
+    Returns:
+        None
+    """
     if current_value > threshold:
         active_incident = Incident.objects.filter(
             server=server,
@@ -37,12 +52,25 @@ def check_metric(server, metric_type, current_value, threshold, Incident):
             active_incident.resolved = True
             active_incident.save()
 
-import re
-from django.core.exceptions import ValidationError
-from django.conf import settings
 
 def process_metrics(server, data, Incident):
-    # Проверка наличия обязательных ключей
+    """
+    Processes the metrics data for a server, validates the data, and creates a Metric record.
+    Also checks if any metric exceeds the threshold and handles incidents.
+
+    Args:
+        server (Server): The server object.
+        data (dict): The metrics data.
+        Incident (Model): The Incident model.
+
+    Raises:
+        KeyError: If a required key is missing in the data.
+        ValueError: If a value in the data is invalid.
+
+    Returns:
+        None
+    """
+    # Пров��рка наличия обязательных ключей
     required_keys = ['cpu', 'mem', 'disk', 'uptime']
     for key in required_keys:
         if key not in data:
@@ -55,7 +83,7 @@ def process_metrics(server, data, Incident):
         if cpu < 0 or cpu > 100:
             raise ValueError("Значение cpu должно быть в диапазоне от 0 до 100")
 
-        # Проверка и преобразование mem
+        # Проверка и преобразов��ние mem
         if not isinstance(data['mem'], str) or '%' not in data['mem']:
             raise ValueError("Значение mem должно быть строкой с символом %")
         data['mem'] = mem = int(re.sub(r'%', '', data['mem']))
@@ -68,7 +96,6 @@ def process_metrics(server, data, Incident):
         data['disk'] = disk = int(re.sub(r'%', '', data['disk']))
         if disk < 0 or disk > 100:
             raise ValueError("Значение disk должно быть в диапазоне от 0 до 100")
-
 
     except ValueError as e:
         raise ValueError(f"Некорректное значение: {e}")
@@ -89,6 +116,12 @@ def process_metrics(server, data, Incident):
         check_metric(server, metric_type, current_value, threshold, Incident)
 
 def fetch_metrics():
+    """
+    Fetches metrics data from all servers and processes it.
+
+    Returns:
+        None
+    """
     Server = apps.get_model('monitor', 'Server')
     Metric = apps.get_model('monitor', 'Metric')
     Incident = apps.get_model('monitor', 'Incident')
@@ -108,6 +141,16 @@ def fetch_metrics():
             logging.error(f"Error polling {server.endpoint}: {str(e)}")
 
 def fetch_metrics_for_test(metrics, val):
+    """
+    Fetches metrics data for testing purposes from all servers and processes it.
+
+    Args:
+        metrics (str): The metric type.
+        val (str): The value of the metric.
+
+    Returns:
+        None
+    """
     Server = apps.get_model('monitor', 'Server')
     Metric = apps.get_model('monitor', 'Metric')
     Incident = apps.get_model('monitor', 'Incident')
@@ -124,6 +167,3 @@ def fetch_metrics_for_test(metrics, val):
         except Exception as e:
             logging.error(f"Ошибка опроса {server.endpoint}: {str(e)}")
             logging.error(traceback.format_exc())
-
-
-
