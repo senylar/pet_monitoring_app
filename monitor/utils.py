@@ -124,3 +124,6 @@ def fetch_metrics_for_test(metrics, val):
         except Exception as e:
             logging.error(f"Ошибка опроса {server.endpoint}: {str(e)}")
             logging.error(traceback.format_exc())
+
+
+
