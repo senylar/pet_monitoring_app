@@ -139,31 +139,3 @@ def fetch_metrics():
             logging.error(f"Timeout while polling {server.endpoint}")
         except Exception as e:
             logging.error(f"Error polling {server.endpoint}: {str(e)}")
-
-def fetch_metrics_for_test(metrics, val):
-    """
-    Fetches metrics data for testing purposes from all servers and processes it.
-
-    Args:
-        metrics (str): The metric type.
-        val (str): The value of the metric.
-
-    Returns:
-        None
-    """
-    Server = apps.get_model('monitor', 'Server')
-    Metric = apps.get_model('monitor', 'Metric')
-    Incident = apps.get_model('monitor', 'Incident')
-
-    servers = Server.objects.all()
-    for server in servers:
-        try:
-            response = requests.get(server.endpoint + f'/met/{metrics}/{val}', timeout=10)
-
-            if response.ok:
-                data = response.json()
-                process_metrics(server, data, Incident)
-
-        except Exception as e:
-            logging.error(f"Ошибка опроса {server.endpoint}: {str(e)}")
-            logging.error(traceback.format_exc())
