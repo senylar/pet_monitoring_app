@@ -10,8 +10,8 @@
 ### Шаги для запуска:
 1. Клонируйте репозиторий:
    ```bash
-   git clone https://github.com/senylar/amo_test_monitoring_app.git
-   cd amocrm_python_test
+   git clone https://github.com/senylar/pet_monitoring_app.git
+   cd pet_monitoring_app
    ```
 
 2. Соберите и запустите контейнеры:
